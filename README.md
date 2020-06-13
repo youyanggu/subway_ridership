@@ -15,3 +15,20 @@ You can install all the dependencies by running the following:
 ```
 pip install -r requirements.txt
 ```
+
+## Usage
+
+### Plot BART ridership
+```
+python bart_ridership.py
+```
+
+### Plot MTA ridership
+```
+python mta_ridership.py
+```
+
+### Plot combined ridership
+```
+python plot_ridership.py
+```

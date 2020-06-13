@@ -7,12 +7,15 @@ import numpy as np
 import pandas as pd
 import requests
 
-# Based on Daily Station Exits: https://www.bart.gov/about/reports/ridership
+# Based on BART daily station exits: https://www.bart.gov/about/reports/ridership
 
 def get_daily_bart_ridership(start_date, out_fname=None):
-    # First download from online
-    url = 'http://64.111.127.166/DSE/Daily_Station_Exits.xlsx'
+    """Download BART data and parse it into a pandas dataframe"""
+
+    print('============================')
     print('Downloading BART Daily Station Exits:', url)
+    print('============================')
+    url = 'http://64.111.127.166/DSE/Daily_Station_Exits.xlsx'
     df_bart = pd.read_excel(url)
     print(df_bart)
 
@@ -27,16 +30,15 @@ def get_daily_bart_ridership(start_date, out_fname=None):
     print('Num data points:', len(df_bart_filt))
 
     num_weeks = len(df_bart_filt) // 7
-    df_bart_filt_weekly = df_bart_filt[-7*num_weeks:]
-    print('Num data points (weekly):', len(df_bart_filt_weekly))
+    df_bart_filt = df_bart_filt[-7*num_weeks:] # number of days is divisble by 7
 
-    df_bart_daily = df_bart_filt_weekly.groupby('date')['total'].sum()
+    df_bart_daily = df_bart_filt.groupby('date')['total'].sum()
     if out_fname:
         print('Saving filtered output to:', out_fname)
         df_bart_daily.to_csv(out_fname)
 
     assert len(df_bart_daily) % 7 == 0, 'Num days must be a multiple of 7'
-    return df_bart_daily
+    return df_bart_daily, df_bart_filt
 
 def plot_bart_ridership(df_bart_daily):
     perc_normal_ridership_bart = \
@@ -64,5 +66,5 @@ if __name__ == '__main__':
     parser.add_argument('--out_fname', help='output csv file name to save parsed/filtered ridership data')
     args = parser.parse_args()
 
-    df_bart_daily = get_daily_bart_ridership(args.start_date, args.out_fname)
+    df_bart_daily, df_bart_filt = get_daily_bart_ridership(args.start_date, args.out_fname)
     plot_bart_ridership(df_bart_daily)

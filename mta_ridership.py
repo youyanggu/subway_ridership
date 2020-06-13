@@ -13,6 +13,7 @@ pd.plotting.register_matplotlib_converters()
 pd.options.mode.chained_assignment = None
 
 def text_to_df(text):
+    # converts text to a pandas dataframe
     lines = text.split('\n')
     cols = [c.strip() for c in lines[0].split(',')]
     lines_arr = []
@@ -25,9 +26,11 @@ def text_to_df(text):
     return df
 
 def get_daily_mta_ridership(start_date, out_fname=None):
-    # First download raw data from MTA website
-    print('Fetching data starting on {}'.format(start_date))
-    print('Might take a minute or two...')
+    """Download MTA data and parse it into a pandas dataframe"""
+
+    print('============================')
+    print('Downloading MTA data starting on {}'.format(start_date))
+    print('============================')
     assert start_date.weekday() == 5, 'Start date must be a Saturday'
     date = start_date - datetime.timedelta(days=7) # we start from the week before
     dfs = []
@@ -66,15 +69,15 @@ def get_daily_mta_ridership(start_date, out_fname=None):
         df_mta_daily.to_csv(out_fname)
 
     assert len(df_mta_daily) % 7 == 0, len(df_mta_daily)
-    return df_mta_daily
+    return df_mta_daily, df_mta_filt
 
-def plot_mta_ridership(df_mta_daily):
+def plot_mta_ridership(df_mta_daily, df_mta_filt):
     perc_normal_ridership_mta = \
         df_mta_daily / np.tile(df_mta_daily[:7].values, len(df_mta_daily) // 7)
     print('% normal ridership:\n', perc_normal_ridership_mta)
     plt.plot(perc_normal_ridership_mta * 100, label='MTA')
     # Optional: filter by station name
-    #g34 = df_mta_daily[df_mta_daily['STATION'] == '34 ST-HERALD SQ'].groupby('date')['entries_daily'].sum()
+    #g34 = df_mta_filt[df_mta_filt['STATION'] == '34 ST-HERALD SQ'].groupby('date')['entries_daily'].sum()
     #plt.plot(g34, label='34th St')
     ax = plt.gca()
     fig = plt.gcf()
@@ -92,9 +95,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_date', type=datetime.date.fromisoformat,
         default=datetime.date(2020,2,1),
-        help='approximate start date (default 2020-02-01).')
+        help='approximate start date (default 2020-02-01). Note: must be a Saturday')
     parser.add_argument('--out_fname', help='output csv file name to save parsed/filtered ridership data')
     args = parser.parse_args()
 
-    df_mta_daily = get_daily_mta_ridership(args.start_date, args.out_fname)
-    plot_mta_ridership(df_mta_daily)
+    df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date, args.out_fname)
+    plot_mta_ridership(df_mta_daily, df_mta_filt)

@@ -1,5 +1,11 @@
-# subway_ridership
-Download and view subway ridership data (currently supports MTA and BART)
+# Subway Ridership during COVID-19
+Download and view subway ridership data (currently supports New York City's MTA and Bay Area's BART).
+
+## Source
+
+BART - Daily Station Exits: https://www.bart.gov/about/reports/ridership
+
+MTA - Turnstile Data: http://web.mta.info/developers/turnstile.html
 
 ## Dependencies
 

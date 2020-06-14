@@ -2,7 +2,7 @@
 Download and view subway ridership data for New York City's [MTA](https://new.mta.info/) and Bay Area's [BART](https://www.bart.gov/).
 
 ![2020-06-13 BART and MTA Ridership](bart_mta_ridership.png)
-![2020-06-13 BART Ridership](bart_mta_ridership_select_stations.png)
+![2020-06-13 BART Ridership](bart_ridership_select_stations.png)
 ![2020-06-13 MTA Ridership](mta_ridership_select_stations.png)
 
 ## Source
@@ -47,3 +47,13 @@ Station abbreviations here: https://github.com/youyanggu/subway_ridership/blob/m
 python mta_ridership.py --station_name 34 St-Penn Sta --station_name Grd Cntrl-42 st --station_name Jksn Ht-Roosvlt --station_name Smith-9 St --station_name Parkchester
 ```
 Station names here: https://github.com/youyanggu/subway_ridership/blob/master/busiest_stations_mta.csv
+
+## Busiest Stations
+
+### BART
+
+https://github.com/youyanggu/subway_ridership/blob/master/busiest_stations_bart.csv
+
+### MTA
+
+https://github.com/youyanggu/subway_ridership/blob/master/busiest_stations_mta.csv

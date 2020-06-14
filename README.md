@@ -51,7 +51,7 @@ By default, we use the week of February 1 as the baseline to compare future ride
 ```
 python bart_ridership.py --start_date 2020-02-08
 ```
-### Change baseline date
+### Save output
 You can save the output of our ridership data by passing in the `--out_fname` flag. This will generate the file you see here: https://github.com/youyanggu/subway_ridership/blob/master/daily_bart_ridership.csv.
 ```
 python bart_ridership.py --out_fname daily_bart_ridership.csv

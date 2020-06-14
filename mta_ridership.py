@@ -80,13 +80,13 @@ def print_busiest_mta_stations(df_mta_filt):
         level=0).sort_values(ascending=False)
     print('Top 10 busiest MTA stations by avg daily entries:')
     print(df_busiest.head(10))
-    #df_busiest.to_csv('busiest_stations_mta.csv')
+    #df_busiest.to_csv('output_data/busiest_stations_mta.csv')
 
 
 def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
     normal_ridership_mta = np.tile(df_mta_daily[:7].values, len(df_mta_daily) // 7)
     perc_normal_ridership_mta = df_mta_daily / normal_ridership_mta
-    print('% normal ridership by date:\n', perc_normal_ridership_mta)
+    print('% normal ridership by date (MTA):\n', perc_normal_ridership_mta)
     plt.plot(perc_normal_ridership_mta * 100, color=COLOR_MTA, label='MTA')
 
     for i, station_name in enumerate(station_names):

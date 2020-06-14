@@ -64,7 +64,7 @@ def print_busiest_bart_stations(df_bart_filt, abbr_to_station=None):
     df_busiest.index.name = 'station_abbr'
     print('Top 10 busiest BART stations by avg daily exits:')
     print(df_busiest.head(10))
-    #df_busiest.to_csv('busiest_stations_bart.csv')
+    #df_busiest.to_csv('output_data/busiest_stations_bart.csv')
 
 
 def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_station=None):
@@ -73,7 +73,7 @@ def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_stat
 
     normal_ridership_bart = np.tile(df_bart_daily[:7].values, len(df_bart_daily) // 7)
     perc_normal_ridership_bart = df_bart_daily / normal_ridership_bart
-    print('% normal ridership by date:\n', perc_normal_ridership_bart)
+    print('% normal ridership by date (BART):\n', perc_normal_ridership_bart)
     plt.plot(perc_normal_ridership_bart * 100, color=COLOR_BART, label='BART')
 
     for i, station_abbr in enumerate(station_abbrs):

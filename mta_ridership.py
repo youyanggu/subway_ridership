@@ -11,6 +11,7 @@ from constants import *
 
 # Based on MTA turnstile data: http://web.mta.info/developers/turnstile.html
 
+
 pd.plotting.register_matplotlib_converters()
 pd.options.mode.chained_assignment = None
 
@@ -73,17 +74,20 @@ def get_daily_mta_ridership(start_date, out_fname=None):
     assert len(df_mta_daily) % 7 == 0, 'number of rows must be a multiple of 7'
     return df_mta_daily, df_mta_filt
 
-def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
-    normal_ridership_mta = np.tile(df_mta_daily[:7].values, len(df_mta_daily) // 7)
-    perc_normal_ridership_mta = df_mta_daily / normal_ridership_mta
-    print('% normal ridership:\n', perc_normal_ridership_mta)
-    plt.plot(perc_normal_ridership_mta * 100, color=COLOR_MTA, label='MTA')
 
+def print_busiest_mta_stations(df_mta_filt):
     df_busiest = df_mta_filt.groupby(['STATION', 'date'])['entries_daily'].sum().mean(
         level=0).sort_values(ascending=False)
     print('Top 10 busiest MTA stations by avg daily entries:')
     print(df_busiest.head(10))
     #df_busiest.to_csv('busiest_stations_mta.csv')
+
+
+def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
+    normal_ridership_mta = np.tile(df_mta_daily[:7].values, len(df_mta_daily) // 7)
+    perc_normal_ridership_mta = df_mta_daily / normal_ridership_mta
+    print('% normal ridership by date:\n', perc_normal_ridership_mta)
+    plt.plot(perc_normal_ridership_mta * 100, color=COLOR_MTA, label='MTA')
 
     for i, station_name in enumerate(station_names):
         # e.g. 34 St-Herald Sq, Grd Cntrl-42 St
@@ -99,13 +103,15 @@ def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
             perc_normal_ridership_mta_station = df_mta_station / normal_ridership_mta_station
             plt.plot(perc_normal_ridership_mta_station * 100, color=f'C{color_idx}', label=station_name)
 
-    plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed', label='New York Shelter-at-Home')
+    plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed',
+        label='New York Shelter-at-Home')
 
     ax = plt.gca()
     fig = plt.gcf()
     fig.autofmt_xdate()
     ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
+
     plt.title('NYC MTA Ridership During COVID-19')
     plt.xlabel('Date')
     plt.ylabel('% of normal ridership')
@@ -113,13 +119,15 @@ def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
     plt.grid()
     plt.show()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_date', type=datetime.date.fromisoformat,
         default=datetime.date(2020,2,1),
-        help=('approximate start date (default 2020-02-01). We use the week beginning at start_date to'
-            ' be the baseline ridership. Note: must be a Saturday'))
-    parser.add_argument('--out_fname', help='output csv file name to save parsed/filtered ridership data')
+        help=('approximate start date (default 2020-02-01). We use the week beginning at start_date'
+            ' to be the baseline ridership. Note: must be a Saturday'))
+    parser.add_argument('--out_fname',
+        help='output csv file name to save parsed/filtered ridership data')
     parser.add_argument('--station_name', action='append', nargs='+',
         help=('additional MTA station names to plot (case-insensitive).'
             ' For station names, see mta_busiest_stations.csv'))
@@ -131,4 +139,5 @@ if __name__ == '__main__':
     print('Station names:', station_names)
 
     df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date, args.out_fname)
+    print_busiest_mta_stations(df_mta_filt)
     plot_mta_ridership(df_mta_daily, df_mta_filt, station_names)

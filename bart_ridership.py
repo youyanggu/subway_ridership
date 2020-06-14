@@ -55,7 +55,7 @@ def get_daily_bart_ridership(start_date, out_fname=None):
     return df_bart_daily, df_bart_filt
 
 
-def print_busiest_bart_stations(df_bart_daily, df_bart_filt, abbr_to_station=None):
+def print_busiest_bart_stations(df_bart_filt, abbr_to_station=None):
     if abbr_to_station is None:
         abbr_to_station = get_abbr_to_station_names()
     df_busiest = df_bart_filt[abbr_to_station.keys()].mean().sort_values(ascending=False)
@@ -73,7 +73,7 @@ def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_stat
 
     normal_ridership_bart = np.tile(df_bart_daily[:7].values, len(df_bart_daily) // 7)
     perc_normal_ridership_bart = df_bart_daily / normal_ridership_bart
-    print('% normal ridership:\n', perc_normal_ridership_bart)
+    print('% normal ridership by date:\n', perc_normal_ridership_bart)
     plt.plot(perc_normal_ridership_bart * 100, color=COLOR_BART, label='BART')
 
     for i, station_abbr in enumerate(station_abbrs):
@@ -88,7 +88,8 @@ def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_stat
         perc_normal_ridership_bart_station = df_bart_station / normal_ridership_bart_station
         plt.plot(perc_normal_ridership_bart_station * 100, color=f'C{color_idx}', label=station_name)
 
-    plt.axvline(LOCKDOWN_DATE_CA, color=COLOR_BART_LOCKDOWN, ls='dashed', label='California Shelter-at-Home')
+    plt.axvline(LOCKDOWN_DATE_CA, color=COLOR_BART_LOCKDOWN, ls='dashed',
+        label='California Shelter-at-Home')
 
     ax = plt.gca()
     fig = plt.gcf()
@@ -103,16 +104,18 @@ def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_stat
     plt.grid()
     plt.show()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_date', type=datetime.date.fromisoformat,
         default=datetime.date(2020,2,1),
         help=('approximate start date (default 2020-02-01). We use the week beginning at start_date to'
             ' be the baseline ridership.'))
-    parser.add_argument('--out_fname', help='output csv file name to save parsed/filtered ridership data')
+    parser.add_argument('--out_fname',
+        help='output csv file name to save parsed/filtered ridership data')
     parser.add_argument('--station_abbr', action='append',
         help=('additional BART station abbreviation to plot (e.g. EM for Embarcadero Station).'
-            ' For station abbreviations, see: https://www.bart.gov/sites/default/files/docs/Station_Names.xls'))
+            ' See station abbreviations: https://www.bart.gov/sites/default/files/docs/Station_Names.xls'))
     args = parser.parse_args()
 
     station_abbrs = args.station_abbr
@@ -123,5 +126,5 @@ if __name__ == '__main__':
         assert abbr in abbr_to_station, f'Unknown station abbrevation: {abbr}'
 
     df_bart_daily, df_bart_filt = get_daily_bart_ridership(args.start_date, args.out_fname)
-    print_busiest_bart_stations(df_bart_daily, df_bart_filt, abbr_to_station)
+    print_busiest_bart_stations(df_bart_filt, abbr_to_station)
     plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_station)

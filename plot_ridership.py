@@ -9,6 +9,8 @@ import pandas as pd
 from bart_ridership import get_daily_bart_ridership
 from mta_ridership import get_daily_mta_ridership
 
+from constants import *
+
 
 def plot_combined_ridership(df_bart_daily, df_mta_daily):
     print('Plotting combined ridership...')
@@ -20,8 +22,11 @@ def plot_combined_ridership(df_bart_daily, df_mta_daily):
     print('% normal ridership (BART):\n', perc_normal_ridership_bart)
     print('% normal ridership (MTA):\n', perc_normal_ridership_mta)
 
-    plt.plot(perc_normal_ridership_bart * 100, label='BART')
-    plt.plot(perc_normal_ridership_mta * 100, label='MTA')
+    plt.axvline(LOCKDOWN_DATE_CA, color=COLOR_BART_LOCKDOWN, ls='dashed', label='California Shelter-at-Home')
+    plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed', label='New York Shelter-at-Home')
+
+    plt.plot(perc_normal_ridership_bart * 100, color=COLOR_BART, label='BART')
+    plt.plot(perc_normal_ridership_mta * 100, color=COLOR_MTA, label='MTA')
     ax = plt.gca()
     fig = plt.gcf()
     fig.autofmt_xdate()

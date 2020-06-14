@@ -1,5 +1,5 @@
 # Subway Ridership during COVID-19
-Download and view subway ridership data for New York City's [MTA](https://new.mta.info/) and Bay Area's [BART](https://www.bart.gov/).
+A simple tool to download and view subway ridership data for New York City's [MTA](https://new.mta.info/) and Bay Area's [BART](https://www.bart.gov/).
 
 ![2020-06-13 BART and MTA Ridership](bart_mta_ridership.png)
 ![2020-06-13 BART Ridership](bart_ridership_select_stations.png)

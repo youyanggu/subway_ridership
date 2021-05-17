@@ -11,7 +11,8 @@ from bart_ridership import get_daily_bart_ridership
 from mta_ridership import get_daily_mta_ridership
 
 
-def plot_combined_ridership(df_bart_daily, df_mta_daily):
+def plot_combined_ridership(df_bart_daily, df_mta_daily, plot_lockdown_dates=False):
+    reference_day = df_mta_daily.index[0]
     print('Plotting combined ridership...')
     normal_ridership_bart = np.tile(df_bart_daily[:7].values, len(df_bart_daily) // 7)
     normal_ridership_mta = np.tile(df_mta_daily[:7].values, len(df_mta_daily) // 7)
@@ -24,19 +25,19 @@ def plot_combined_ridership(df_bart_daily, df_mta_daily):
     plt.plot(perc_normal_ridership_bart * 100, color=COLOR_BART, label='BART')
     plt.plot(perc_normal_ridership_mta * 100, color=COLOR_MTA, label='MTA')
 
-    plt.axvline(LOCKDOWN_DATE_CA, color=COLOR_BART_LOCKDOWN, ls='dashed',
-        label='California Shelter-at-Home')
-    plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed',
-        label='New York Shelter-at-Home')
+    if plot_lockdown_dates:
+        plt.axvline(LOCKDOWN_DATE_CA, color=COLOR_BART_LOCKDOWN, ls='dashed',
+            label='California Shelter-at-Home')
+        plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed',
+            label='New York Shelter-at-Home')
 
     ax = plt.gca()
     fig = plt.gcf()
     fig.autofmt_xdate()
     ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-    ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
+    #ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
     plt.title('BART (Bay Area) and MTA (NYC) Ridership During COVID-19')
-    plt.xlabel('Date')
-    plt.ylabel('% of normal ridership')
+    plt.ylabel(f'% of Normal Ridership (Reference Week: {reference_day})')
     plt.legend()
     plt.grid()
     plt.show()
@@ -47,8 +48,13 @@ if __name__ == '__main__':
     parser.add_argument('--start_date', type=datetime.date.fromisoformat,
         default=datetime.date(2020,2,1),
         help='approximate start date (default 2020-02-01).')
+    parser.add_argument('--end_date', type=datetime.date.fromisoformat,
+        default=datetime.date.today(),
+        help='approximate end date (default is today).')
+    parser.add_argument('--plot_lockdown_dates', action='store_true',
+        help='Plot lines for lockdown dates')
     args = parser.parse_args()
 
-    df_bart_daily, df_bart_filt = get_daily_bart_ridership(args.start_date)
-    df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date)
-    plot_combined_ridership(df_bart_daily, df_mta_daily)
+    df_bart_daily, df_bart_filt = get_daily_bart_ridership(args.start_date, args.end_date)
+    df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date, args.end_date)
+    plot_combined_ridership(df_bart_daily, df_mta_daily, args.plot_lockdown_dates)

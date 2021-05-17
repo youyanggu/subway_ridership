@@ -28,43 +28,58 @@ def text_to_df(text):
     df = pd.DataFrame(lines_arr, columns=cols)
     return df
 
-def get_daily_mta_ridership(start_date, out_fname=None):
-    """Download MTA daily turnstile entries and parse it into a pandas dataframe"""
 
+def get_last_saturday(date):
+    shift = (date.weekday() + 2) % 7
+    last_sat = date - datetime.timedelta(days=shift)
+
+    return last_sat
+
+
+def get_daily_mta_ridership(start_date, end_date, out_fname=None):
+    """Download MTA daily turnstile entries and parse it into a pandas dataframe"""
     print('============================')
-    print('Downloading MTA data starting on {}'.format(start_date))
+    print(f'Downloading MTA data from {start_date} to {end_date}')
     print('============================')
-    assert start_date.weekday() == 5, 'Start date must be a Saturday'
-    date = start_date - datetime.timedelta(days=7) # we start from the week before
+
+    sort_cols = ['C/A', 'UNIT', 'SCP', 'STATION', 'LINENAME', 'DIVISION', 'date']
+    last_sat = get_last_saturday(start_date)
+    date = last_sat
     dfs = []
-    while date <= datetime.date.today():
+    while date <= end_date + datetime.timedelta(days=7):
         url = 'http://web.mta.info/developers/data/nyct/turnstile/turnstile_{}.txt'.format(
             date.strftime('%y%m%d'))
-        date += datetime.timedelta(days=7)
-        print(url)
+        print('Downloading:', url)
         resp = requests.get(url)
-        print(resp, len(resp.text))
+        print(resp)
 
         data = resp.text
-        df = text_to_df(data)
-        dfs.append(df)
+        df_week = text_to_df(data)
 
-    # Then combine and filter data
-    print('Combining and filtering data...')
+        print('Filtering data...')
+        df_week['date'] = pd.to_datetime(df_week['DATE']).dt.date
+
+        df_week = df_week.sort_values(sort_cols).reset_index(drop=True)
+        df_daily = df_week.drop_duplicates(sort_cols, keep='last').reset_index(drop=True)
+
+        print(f'Filtered from {len(df_week):,} rows to {len(df_daily):,} rows')
+        dfs.append(df_daily)
+        date += datetime.timedelta(days=7) 
+
+    print('Combining data...')
     df_all = pd.concat(dfs)
-    df_all['date'] = pd.to_datetime(df_all['DATE']).dt.date
-    df_all = df_all[df_all['date'] >= start_date + datetime.timedelta(days=6)]
+    df_all = df_all.sort_values(sort_cols).reset_index(drop=True)
     df_all['ENTRIES'] = df_all['ENTRIES'].astype(int)
     df_all['EXITS'] = df_all['EXITS'].astype(int)
+    df_all['entries_daily'] = df_all.groupby(sort_cols[:-1])['ENTRIES'].diff()
+    df_all['exits_daily'] = df_all.groupby(sort_cols[:-1])['EXITS'].diff()
 
-    sort_cols = ['C/A', 'UNIT', 'SCP', 'STATION', 'LINENAME', 'DIVISION', 'DATE']
-    df_all = df_all.sort_values(sort_cols).reset_index()
-    df_daily = df_all.drop_duplicates(sort_cols, keep='last').reset_index()
-    df_daily['entries_daily'] = df_daily.groupby(sort_cols[:-1])['ENTRIES'].diff()
-    df_daily['exits_daily'] = df_daily.groupby(sort_cols[:-1])['EXITS'].diff()
+    df_mta_filt = df_all[(df_all['entries_daily'] >= 0) & (df_all['entries_daily'] < 20000) & \
+        (df_all['exits_daily'] >= 0) & (df_all['exits_daily'] < 20000)]
 
-    df_mta_filt = df_daily[(df_daily['entries_daily'] >= 0) & (df_daily['entries_daily'] < 20000) &
-        (df_daily['exits_daily'] >= 0) & (df_daily['exits_daily'] < 20000)]
+    assert df_mta_filt['date'].min() <= start_date, \
+        f"Missing dates: {df_mta_filt['date'].min()} > {start_date}"
+    df_mta_filt = df_mta_filt[df_mta_filt['date'] >= start_date]
 
     df_mta_daily = df_mta_filt.groupby('date')['entries_daily'].sum()
     if out_fname:
@@ -103,8 +118,9 @@ def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):
             perc_normal_ridership_mta_station = df_mta_station / normal_ridership_mta_station
             plt.plot(perc_normal_ridership_mta_station * 100, color=f'C{color_idx}', label=station_name)
 
-    plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed',
-        label='New York Shelter-at-Home')
+    if df_mta_daily.index.min() < LOCKDOWN_DATE_NY < df_mta_daily.index.max():
+        plt.axvline(LOCKDOWN_DATE_NY, color=COLOR_MTA_LOCKDOWN, ls='dashed',
+            label='New York Shelter-at-Home')
 
     ax = plt.gca()
     fig = plt.gcf()
@@ -126,6 +142,9 @@ if __name__ == '__main__':
         default=datetime.date(2020,2,1),
         help=('approximate start date (default 2020-02-01). We use the week beginning at start_date'
             ' to be the baseline ridership. Note: must be a Saturday'))
+    parser.add_argument('--end_date', type=datetime.date.fromisoformat,
+        default=datetime.date.today(),
+        help='approximate end date (default is today).')
     parser.add_argument('--out_fname',
         help='output csv file name to save parsed/filtered ridership data')
     parser.add_argument('--station_name', action='append', nargs='+',
@@ -138,6 +157,6 @@ if __name__ == '__main__':
         station_names = [' '.join(station_name) for station_name in args.station_name]
     print('Station names:', station_names)
 
-    df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date, args.out_fname)
+    df_mta_daily, df_mta_filt = get_daily_mta_ridership(args.start_date, args.end_date, args.out_fname)
     print_busiest_mta_stations(df_mta_filt)
     plot_mta_ridership(df_mta_daily, df_mta_filt, station_names)

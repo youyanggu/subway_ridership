@@ -1,47 +1,47 @@
 station_abbr,station_name,exits_daily
-EM,Embarcadero,12444.81512605042
-MT,Montgomery Street,11781.75630252101
-PL,Powell Street,7445.050420168067
-CC,Civic Center,6913.663865546218
-16,16th Street Mission,4102.899159663865
-12,12th Street / Oakland City Center,3961.1932773109243
-19,19th Street Oakland,3896.0336134453783
-24,24th Street Mission,3855.3025210084033
-BK,Berkeley,3427.344537815126
-BP,Balboa Park,3188.3949579831933
-DC,Daly City,2986.6890756302523
-FV,Fruitvale,2866.084033613445
-MA,MacArthur,2745.235294117647
-EN,El Cerrito Del Norte,2592.176470588235
-OW,West Oakland,2291.327731092437
-LM,Lake Merritt,2220.159663865546
-ED,Dublin/Pleasanton,2147.252100840336
-GP,Glen Park,2136.63025210084
-SL,San Leandro,2043.0504201680671
-PH,Pleasant Hill,1992.9495798319329
-BF,Bayfair,1818.8235294117646
-CL,Coliseum,1806.689075630252
-WC,Walnut Creek,1781.5378151260504
-CN,Concord,1776.0336134453783
-RM,Richmond,1620.1680672268908
-SO,San Francisco International Airport,1597.218487394958
-FM,Fremont,1550.1176470588234
-HY,Hayward,1544.0672268907563
-RR,Rockridge,1532.3361344537816
-MB,Millbrae,1495.4621848739496
-AS,Ashby,1466.9831932773109
-EP,El Cerrito Plaza,1422.7310924369747
-UC,Union City,1291.310924369748
-WP,Pittsburg/Bay Point,1267.90756302521
-CM,Colma,1244.857142857143
-WS,Warm Springs,1176.3445378151262
-NB,North Berkeley,1174.1344537815125
-SB,San Bruno,1055.3193277310925
-SS,South San Francisco,987.3109243697479
-SH,South Hayward,979.1764705882352
-LF,Lafayette,931.3361344537815
-WD,West Dublin/Pleasanton,921.9327731092437
-CV,Castro Valley,822.2016806722689
-OR,Orinda,744.4789915966387
-NC,North Concord,545.2605042016806
-OA,Oakland International Airport,292.5546218487395
+EM,Embarcadero,5113
+MT,Montgomery Street,5079
+PL,Powell Street,4298
+CC,Civic Center,3594
+16,16th Street Mission,2243
+24,24th Street Mission,2148
+FV,Fruitvale,1934
+12,12th Street / Oakland City Center,1838
+BP,Balboa Park,1791
+19,19th Street Oakland,1656
+DC,Daly City,1600
+BK,Berkeley,1597
+EN,El Cerrito Del Norte,1496
+MA,MacArthur,1428
+OW,West Oakland,1338
+SL,San Leandro,1291
+CL,Coliseum,1247
+LM,Lake Merritt,1222
+BF,Bayfair,1184
+GP,Glen Park,1091
+RM,Richmond,1083
+CN,Concord,1032
+ED,Dublin/Pleasanton,1001
+HY,Hayward,929
+PH,Pleasant Hill,911
+WC,Walnut Creek,866
+WP,Pittsburg/Bay Point,814
+SO,San Francisco International Airport,789
+FM,Fremont,748
+EP,El Cerrito Plaza,740
+AS,Ashby,729
+UC,Union City,666
+CM,Colma,665
+RR,Rockridge,662
+MB,Millbrae,629
+SH,South Hayward,609
+SB,San Bruno,592
+NB,North Berkeley,542
+SS,South San Francisco,512
+WS,Warm Springs,471
+CV,Castro Valley,426
+WD,West Dublin/Pleasanton,426
+LF,Lafayette,415
+OR,Orinda,314
+NC,North Concord,266
+OA,Oakland International Airport,151

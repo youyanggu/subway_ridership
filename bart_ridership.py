@@ -46,7 +46,7 @@ def get_daily_bart_ridership(start_date, end_date, out_fname=None):
     num_weeks = len(df_bart_filt) // 7
     df_bart_filt = df_bart_filt[-7*num_weeks:] # number of days is divisble by 7
 
-    df_bart_daily = df_bart_filt.groupby('date')['exits'].sum()
+    df_bart_daily = df_bart_filt.groupby('date')['exits'].sum().astype(int)
     df_bart_daily.name = 'exits_daily'
     if out_fname:
         print('Saving filtered output to:', out_fname)
@@ -56,16 +56,17 @@ def get_daily_bart_ridership(start_date, end_date, out_fname=None):
     return df_bart_daily, df_bart_filt
 
 
-def print_busiest_bart_stations(df_bart_filt, abbr_to_station=None):
+def print_busiest_bart_stations(df_bart_filt, abbr_to_station=None, save_stations=False):
     if abbr_to_station is None:
         abbr_to_station = get_abbr_to_station_names()
-    df_busiest = df_bart_filt[abbr_to_station.keys()].mean().sort_values(ascending=False)
-    df_busiest = pd.DataFrame(
-        {'station_name': df_busiest.index.map(abbr_to_station), 'exits_daily' : df_busiest})
-    df_busiest.index.name = 'station_abbr'
+    df_bart_busiest = df_bart_filt[abbr_to_station.keys()].mean().sort_values(ascending=False)
+    df_bart_busiest = pd.DataFrame(
+        {'station_name': df_bart_busiest.index.map(abbr_to_station), 'exits_daily' : df_bart_busiest})
+    df_bart_busiest.index.name = 'station_abbr'
     print('Top 10 busiest BART stations by avg daily exits:')
-    print(df_busiest.head(10))
-    #df_busiest.to_csv('output_data/busiest_stations_bart.csv')
+    print(df_bart_busiest.head(10))
+    if save_stations:
+        df_bart_busiest.to_csv('output_data/busiest_stations_bart.csv', float_format='%.0f')
 
 
 def plot_bart_ridership(df_bart_daily, df_bart_filt, station_abbrs, abbr_to_station=None):

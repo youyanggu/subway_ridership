@@ -81,7 +81,7 @@ def get_daily_mta_ridership(start_date, end_date, out_fname=None):
         f"Missing dates: {df_mta_filt['date'].min()} > {start_date}"
     df_mta_filt = df_mta_filt[df_mta_filt['date'] >= start_date]
 
-    df_mta_daily = df_mta_filt.groupby('date')['entries_daily'].sum()
+    df_mta_daily = df_mta_filt.groupby('date')['entries_daily'].sum().astype(int)
     if out_fname:
         print('Saving filtered output to:', out_fname)
         df_mta_daily.to_csv(out_fname)
@@ -90,12 +90,14 @@ def get_daily_mta_ridership(start_date, end_date, out_fname=None):
     return df_mta_daily, df_mta_filt
 
 
-def print_busiest_mta_stations(df_mta_filt):
-    df_busiest = df_mta_filt.groupby(['STATION', 'date'])['entries_daily'].sum().mean(
+def print_busiest_mta_stations(df_mta_filt, save_stations=False):
+    df_mta_busiest = df_mta_filt.groupby(['STATION', 'date'])['entries_daily'].sum().mean(
         level=0).sort_values(ascending=False)
+    df_mta_busiest.name = 'average_entries_per_turnstile'
     print('Top 10 busiest MTA stations by avg daily entries:')
-    print(df_busiest.head(10))
-    #df_busiest.to_csv('output_data/busiest_stations_mta.csv')
+    print(df_mta_busiest.head(10))
+    if save_stations:
+        df_mta_busiest.to_csv('output_data/busiest_stations_mta.csv', float_format='%.0f')
 
 
 def plot_mta_ridership(df_mta_daily, df_mta_filt, station_names=[]):

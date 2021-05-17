@@ -3,7 +3,7 @@ A simple tool to download and view subway ridership data for New York City's [MT
 
 Created by [Youyang Gu](https://youyanggu.com).
 
-For a time series CSV file of ridership per day or a list of busiest stations, see the [`outputs`](/outputs) directory.
+For a time series CSV file of ridership per day or a list of busiest stations, see the [`output_data`](/output_data) folder.
 
 ![2020-06-13 BART and MTA Ridership](plots/bart_mta_ridership.png)
 ![2020-06-13 BART Ridership](plots/bart_ridership_select_stations.png)
